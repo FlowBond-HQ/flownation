@@ -1,38 +1,54 @@
-const nations = [
+import Link from 'next/link'
+
+type Nation = {
+  name: string
+  region: string
+  blurb: string
+  status: 'live' | 'soon'
+  /** External site (live nation) */
+  url?: string
+  /** Internal coming-soon page (clickable, waitlist) */
+  href?: string
+}
+
+const nations: Nation[] = [
   {
     name: 'CDMX',
     region: 'Mexico City',
     blurb: 'Art, culture, and connection in the heart of Mexico City.',
     url: 'https://cdmx.flownation.world',
-    status: 'live' as const,
+    status: 'live',
   },
   {
     name: 'Austin',
     region: 'Texas',
     blurb: 'A home for builders, music, and community in the Texas capital.',
-    status: 'soon' as const,
+    href: '/atx',
+    status: 'soon',
   },
   {
     name: 'LA',
     region: 'Los Angeles',
     blurb: 'Creativity and culture on the California coast.',
-    status: 'soon' as const,
+    href: '/la',
+    status: 'soon',
   },
   {
     name: 'Vallarta',
     region: 'Puerto Vallarta',
     blurb: 'Gathering by the Pacific on Mexico’s western shore.',
-    status: 'soon' as const,
+    status: 'soon',
   },
   {
     name: 'Tulum',
     region: 'Riviera Maya',
     blurb: 'Nature, ceremony, and connection in the jungle by the sea.',
-    status: 'soon' as const,
+    href: '/tulum',
+    status: 'soon',
   },
 ]
 
-function NationCard({ nation }: { nation: (typeof nations)[number] }) {
+function NationCard({ nation }: { nation: Nation }) {
   const isLive = nation.status === 'live'
 
   const inner = (
@@ -53,29 +69,41 @@ function NationCard({ nation }: { nation: (typeof nations)[number] }) {
       </div>
       <h3 className="mt-3 text-2xl font-semibold text-stone-900">{nation.name}</h3>
       <p className="mt-2 text-sm leading-relaxed text-stone-600">{nation.blurb}</p>
-      {isLive && (
+      {isLive ? (
         <span className="mt-5 inline-block text-sm font-medium text-stone-900 underline underline-offset-4 decoration-amber-400">
           Enter {nation.name} →
         </span>
-      )}
+      ) : nation.href ? (
+        <span className="mt-5 inline-block text-sm font-medium text-stone-900 underline underline-offset-4 decoration-amber-400">
+          Join the waitlist →
+        </span>
+      ) : null}
     </>
   )
 
-  const base =
-    'block rounded-3xl border p-7 transition-all bg-white text-left'
+  const base = 'block rounded-3xl border p-7 transition-all text-left'
+  const hover = 'hover:border-amber-400 hover:shadow-md'
 
-  return isLive ? (
-    <a
-      href={nation.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`${base} border-stone-200 hover:border-amber-400 hover:shadow-md`}
-    >
-      {inner}
-    </a>
-  ) : (
-    <div className={`${base} border-stone-100 bg-stone-50/60`}>{inner}</div>
-  )
+  if (nation.url) {
+    return (
+      <a
+        href={nation.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${base} bg-white border-stone-200 ${hover}`}
+      >
+        {inner}
+      </a>
+    )
+  }
+  if (nation.href) {
+    return (
+      <Link href={nation.href} className={`${base} bg-white border-stone-200 ${hover}`}>
+        {inner}
+      </Link>
+    )
+  }
+  return <div className={`${base} bg-stone-50/60 border-stone-100`}>{inner}</div>
 }
 
 export default function Home() {
