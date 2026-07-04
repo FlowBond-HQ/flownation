@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const geistSans = Geist({
@@ -33,7 +34,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-white">{children}</body>
+      <body className="min-h-full bg-white">
+        {children}
+        <Script
+          src="https://flowme.one/flowmap-widget.js"
+          strategy="lazyOnload"
+          data-event="FLOWNATION"
+          data-color="#3A7BFF"
+          data-label="Add to the map"
+        />
+      </body>
     </html>
   )
 }
